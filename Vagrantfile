@@ -78,7 +78,8 @@ Vagrant.configure("2") do |config|
     web.vm.hostname = "webserver01.toni.com"
     web.vm.network "private_network", ip: "192.168.20.5"
     web.vm.network 'forwarded_port', guest: 80, host: 8080
-#    web.vm.network 'forwarded_port', guest: 443, host: 8443 
+#    web.vm.network 'forwarded_port', guest: 443, host: 8443
+    web.vm.provision 'shell', path: 'einrichtungWEB' 
     web.vm.provider :virtualbox do |vb|
       vb.name = "webserver01"
       vb.memory = 512
@@ -90,6 +91,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "dbserver" do |db|
     db.vm.hostname = "dbserver01.toni.com"
     db.vm.network "private_network", ip: "192.168.20.6"
+    db.vm.provision 'shell', path: 'einrichtungDB'
     db.vm.provider :virtualbox do |vb|
       vb.name = "dbserver"
       vb.memory = 512
