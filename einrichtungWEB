@@ -35,22 +35,22 @@ sudo dnf whatprovides /usr/sbin/semanage
 sudo dnf install policycoreutils-python-utils
 
 # wordpress.conf
-        echo <<EOD > /etc/httpd/conf.d/wordpress.conf
-        <VirtualHost *:80>
-	ServerName localhost
-	ServerAdmin root@localhost
-	DocumentRoot /var/www/html/wordpress
+cat <<'EOD' > /etc/httpd/conf.d/wordpress.conf
+<VirtualHost *:80>
+ServerName localhost
+ServerAdmin root@localhost
+DocumentRoot /var/www/html/wordpress
 
-	<Directory "/var/www/html/wordpress">
-	Options Indexes FollowSymLinks
-	AllowOverride all
-	Require all granted
-	</Directory>
+<Directory "/var/www/html/wordpress">
+Options Indexes FollowSymLinks
+AllowOverride all
+Require all granted
+</Directory>
 
-	ErrorLog /var/log/httpd/wordpress_error.log
-	CustomLog /var/log/httpd/wordpress_access.log common
-	</VirtualHost>
-	EOD
+ErrorLog /var/log/httpd/wordpress_error.log
+CustomLog /var/log/httpd/wordpress_access.log common
+</VirtualHost>
+EOD
 
 # MySQL Extenstion
 dnf install php-mysqlnd
