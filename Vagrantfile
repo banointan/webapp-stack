@@ -80,6 +80,7 @@ Vagrant.configure("2") do |config|
     web.vm.network 'forwarded_port', guest: 80, host: 8080
     web.vm.network 'forwarded_port', guest: 443, host: 8443
     web.vm.provision 'shell', path: 'einrichtungWEB' 
+    web.vm.provision 'shell', path: 'SSL-Certificates' 
     web.vm.provider :virtualbox do |vb|
       vb.name = "webserver01"
       vb.memory = 512
