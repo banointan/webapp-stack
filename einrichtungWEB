@@ -1,0 +1,64 @@
+
+sudo dnf update 
+# mit y bestästigen
+sudo dnf upgrade
+# mit y bestätigen 
+
+sudo dnf -y install epel-release
+sudo dnf -y install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+sudo dnf -y install httpd
+sudo dnf -y module install php:remi-8.0
+
+sudo systemctl enable httpd
+
+cd /var/www/html/
+sudo wget https://wordpress.org/latest.tar.gz
+sudo tar -xzvf latest.tar.gz
+cd wordpress
+sudo cp wp-config-sample.php wp-config.php
+
+# sudo vi wp-config.php
+sudo sed -i \          
+	 -e 's/database_name_here/dbwordpress/' /
+         -e 's/username_here/wpuser/' \
+         -e 's/password_here/PASSWORD/' \
+         -e 's/localhost/192.168.20.6/' \
+         wp-config.php
+
+sudo chown -R apache:apache /var/www/html/wordpress
+sudo chmod -R 775 /var/www/html/wordpress/
+
+sudo semanage fcontext -a -t httpd_sys_rw_content_t "/var/www/html/wordpress(/.*)?"
+sudo restorecon -Rv /var/www/html/wordpress
+
+sudo dnf whatprovides /usr/sbin/semanage
+sudo dnf install policycoreutils-python-utils
+
+# wordpress.conf
+        echo <<EOD > /etc/httpd/conf.d/wordpress.conf
+        <VirtualHost *:80>
+	ServerName localhost
+	ServerAdmin root@localhost
+	DocumentRoot /var/www/html/wordpress
+
+	<Directory "/var/www/html/wordpress">
+	Options Indexes FollowSymLinks
+	AllowOverride all
+	Require all granted
+	</Directory>
+
+	ErrorLog /var/log/httpd/wordpress_error.log
+	CustomLog /var/log/httpd/wordpress_access.log common
+	</VirtualHost>
+	EOD
+
+# MySQL Extenstion
+dnf install php-mysqlnd
+dnf install mysql
+
+sudo systemctl restart httpd
+sudo systemctl restart php-fpm
+
+
+
+
