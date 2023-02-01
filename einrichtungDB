@@ -1,13 +1,15 @@
-sudo dnf update
+sudo su -
+
+sudo dnf update -y
 # mit y bestätigen
 
-sudo dnf upgrade
+sudo dnf upgrade -y
 # mit y bestätigen
 
-sudo dnf install mariadb-server mariadb
+sudo dnf install mariadb-server mariadb -y
 
 # cp /vagrant/my.cnf.d/* /etc/my.cnf.d/
-echo <<EOD > /etc/my.cnf.d/charset.cnf
+cat <<'EOD' > /etc/my.cnf.d/charset.cnf
 [client]
 default-character-set = utf8mb4
 
