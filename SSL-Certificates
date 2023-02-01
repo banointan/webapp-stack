@@ -1,6 +1,6 @@
 # How to Generate Self-Signed SSL Certificates Rocky Linux 8
 
-sudo su
+sudo su -
 
 # Install OpenSSL
 sudo dnf install openssl -y
@@ -12,7 +12,7 @@ cd /etc/ssl/
 
 # Private.key mit Passwort
 # openssl genrsa -des3 -out private.key 2048
-sudo openssl genrsa -out private.key 2048
+sudo openssl genrsa -out /etc/ssl/private.key 2048
 
 # .CSR Datei ohne config file
 # sudo openssl req -key private.key -new -out server.csr 
@@ -20,30 +20,30 @@ sudo openssl genrsa -out private.key 2048
 
 
 # .CSR Datei mit config file
-cat <<'EOD' > /etc/ssl/server.cnf
+sudo cat <<'EOD' > /etc/ssl/server.cnf
 # OpenSSL configuration file for creating a CSR for a server certificate
-# Adapt at least the FQDN and ORGNAME lines, and then run 
+# Adapt at least the FQDN and ORGNAME lines, and then run
 # openssl req -new -config myserver.cnf -keyout myserver.key -out myserver.csr
 # on the command line. 
 
 # the fully qualified server (or service) name
-FQDN = webserver01.toni.com 
+FQDN = webserver01.toni.com
 
 # the name of your location
-LOCATION = Bern 
+LOCATION = Bern
 
 # the name of your organization
 # (see also https://www.switch.ch/pki/participants.html)
-ORGNAME = Universitaet Bern 
+ORGNAME = Universitaet Bern
 
 # the name of your organization unit
-UNITNAME = Informatikdienste 
+UNITNAME = Informatikdienste
 
 # subjectAltName entries: to add DNS aliases to the CSR, delete
 # the '#' character in the ALTNAMES line, and change the subsequent
 # 'DNS:' entries accordingly. Please note: all DNS names must
 # resolve to the same IP address as the FQDN.
-ALTNAMES = DNS:$FQDN 
+ALTNAMES = DNS:$FQDN
 
 # --- no modifications required below ---
 [ req ]
@@ -52,17 +52,18 @@ prompt = no
 encrypt_key = no
 default_md = sha1
 distinguished_name = dn
-req_extensions = req_ext 
+req_extensions = req_ext
 
 [ dn ]
 C = CH
 L = $LOCATION
 O = $ORGNAME
 OU = $UNITNAME
-CN = $FQDN 
+CN = $FQDN
 
 [ req_ext ]
 subjectAltName = $ALTNAMES
+
 EOD
 # ENDE config File
 
@@ -75,10 +76,10 @@ sudo openssl x509 -text -noout -in server.crt
 cd /etc/httpd/conf.d/
 
 sudo sed -i \
-         -e 's/#DocumentRoot "/var/www/html"/DocumentRoot "/var/www/html/wordpress"/' /
+         -e 's/#DocumentRoot \"\/var\/www\/html\"/DocumentRoot \"\/var\/www\/html\/wordpress\"/' \
          -e 's/#ServerName www.example.com:443/ServerName localhost/' \
-         -e 's/SSLCertificateFile /etc/pki/tls/certs/localhost.crt/SSLCertificateFile /etc/ssl/server.crt/' \
-         -e 's/SSLCertificateKeyFile /etc/pki/tls/private/localhost.key/SSLCertificateKeyFile /etc/ssl/private.key/' \
+         -e 's/SSLCertificateFile \/etc\/pki\/tls\/certs\/localhost.crt/SSLCertificateFile \/etc\/ssl\/server.crt/' \
+         -e 's/SSLCertificateKeyFile \/etc\/pki\/tls\/private\/localhost.key/SSLCertificateKeyFile \/etc\/ssl\/private.key/' \
          ssl.conf
 
 sudo systemctl restart httpd
