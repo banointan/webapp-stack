@@ -73,30 +73,31 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "geerlingguy/rockylinux8"
 
+  
+  # Define a vm with the machine name
+  config.vm.define "dbserver" do |db|
+    db.vm.hostname = "dbserver01.toni.com"
+    db.vm.network "private_network", ip: "192.168.20.6"
+    db.vm.provider :virtualbox do |vb|
+      vb.name = "dbserver"
+      vb.memory = 512
+      vb.cpus = 1
+    end
+    db.vm.provision 'shell', path: 'einrichtungDB'
+  end
+  
   # Define a vm with the machine name
   config.vm.define "webserver" do |web|
     web.vm.hostname = "webserver01.toni.com"
     web.vm.network "private_network", ip: "192.168.20.5"
     web.vm.network 'forwarded_port', guest: 80, host: 8080
     web.vm.network 'forwarded_port', guest: 443, host: 8443
-    web.vm.provision 'shell', path: 'einrichtungWEB' 
-    web.vm.provision 'shell', path: 'SSL-Certificates' 
     web.vm.provider :virtualbox do |vb|
       vb.name = "webserver01"
       vb.memory = 512
       vb.cpus = 1
     end
-  end
-
-  # Define a vm with the machine name
-  config.vm.define "dbserver" do |db|
-    db.vm.hostname = "dbserver01.toni.com"
-    db.vm.network "private_network", ip: "192.168.20.6"
-    db.vm.provision 'shell', path: 'einrichtungDB'
-    db.vm.provider :virtualbox do |vb|
-      vb.name = "dbserver"
-      vb.memory = 512
-      vb.cpus = 1
-    end
+    web.vm.provision 'shell', path: 'einrichtungWEB' 
+    web.vm.provision 'shell', path: 'SSL-Certificates' 
   end
 end
