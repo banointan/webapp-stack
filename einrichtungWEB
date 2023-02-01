@@ -1,7 +1,8 @@
+sudo su -
 
-sudo dnf update 
+sudo dnf update -y 
 # mit y bestästigen
-sudo dnf upgrade
+sudo dnf upgrade -y
 # mit y bestätigen 
 
 sudo dnf -y install epel-release
@@ -18,12 +19,14 @@ cd wordpress
 sudo cp wp-config-sample.php wp-config.php
 
 # sudo vi wp-config.php
-sudo sed -i \          
-	 -e 's/database_name_here/dbwordpress/' /
-         -e 's/username_here/wpuser/' \
-         -e 's/password_here/PASSWORD/' \
-         -e 's/localhost/192.168.20.6/' \
-         wp-config.php
+
+sudo sed -i \
+ -e 's/database_name_here/dbwordpress/' \
+ -e 's/username_here/wpuser/' \
+ -e 's/password_here/PASSWORD/' \
+ -e 's/localhost/192.168.20.6/' \
+ /var/www/html/wordpress/wp-config.php
+
 
 sudo chown -R apache:apache /var/www/html/wordpress
 sudo chmod -R 775 /var/www/html/wordpress/
@@ -53,8 +56,8 @@ CustomLog /var/log/httpd/wordpress_access.log common
 EOD
 
 # MySQL Extenstion
-dnf install php-mysqlnd
-dnf install mysql
+dnf -y install php-mysqlnd
+dnf -y install mysql
 
 sudo systemctl restart httpd
 sudo systemctl restart php-fpm
